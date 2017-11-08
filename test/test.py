@@ -16,6 +16,7 @@ class AppTest(unittest.TestCase):
         self.db_fd, database_path = tempfile.mkstemp()
         config.SQLALCHEMY_DATABASE_URI = 'sqlite:///' + database_path
         api = create_app(config)
+        self.db_session = api.db_session
         self.app = api.test_client()
 
     def tearDown(self):
