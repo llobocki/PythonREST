@@ -117,3 +117,6 @@ venv.bak/
 .sonarlint/
 
 # End of https://www.gitignore.io/api/python,sonarqube
+
+
+app.db
