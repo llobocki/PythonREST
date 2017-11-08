@@ -1,6 +1,4 @@
-from marshmallow import Schema, fields, post_load
-
-from app.modules.user import models
+from marshmallow import Schema, fields
 
 
 class UserSchema(Schema):

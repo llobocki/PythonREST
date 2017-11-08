@@ -1,7 +1,6 @@
-from flask import Blueprint, Flask
-from flask_restplus import Api, apidoc
-
 from app.modules.user.controllers import api as user_api
+from flask import Blueprint
+from flask_restplus import Api
 
 blueprint = Blueprint('api', __name__, url_prefix='/api')
 

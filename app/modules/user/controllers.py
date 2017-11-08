@@ -1,4 +1,3 @@
-# from app.database import session
 import sqlalchemy as sa
 
 from app.modules.user import models
