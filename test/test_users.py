@@ -71,8 +71,6 @@ class UserTest(AppTest):
             data=json.dumps(body),
             content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.db_session.delete(user)
-        self.db_session.commit()
 
     def test_put(self):
         user = models.User(name="aaa", surname="bbb")
@@ -90,8 +88,6 @@ class UserTest(AppTest):
         result = self._to_json(response.data)
         result.pop('id')
         self.assertDictEqual(result, body)
-        self.db_session.delete(user)
-        self.db_session.commit()
 
     def test_get(self):
         expected_result = {"name": "aaa", "surname": "bbb"}
@@ -106,9 +102,6 @@ class UserTest(AppTest):
         result = self._to_json(response.data)
         result.pop('id')
         self.assertDictEqual(result, expected_result)
-
-        self.db_session.delete(user)
-        self.db_session.commit()
 
     def test_delete(self):
         user = models.User(name="aaa", surname="bbb")
@@ -130,6 +123,3 @@ class UserTest(AppTest):
         response = self.app.get('/api/users/')
         result = self._to_json(response.data)
         self.assertTrue(len(result) == 2)
-        self.db_session.delete(user_1)
-        self.db_session.delete(user_2)
-        self.db_session.commit()
