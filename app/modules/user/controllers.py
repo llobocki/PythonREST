@@ -17,18 +17,18 @@ class UserList(Resource):
     @api.marshal_list_with(response_user)
     def get(self):
         entities = current_app.db_session.query(models.User).all()
-        response = users_schema.dump(entities).data
+        response = users_schema.dump(entities)
         return response
 
     @api.doc()
     @api.expect(user, validate=True)
     @api.marshal_with(response_user, code=201)
     def post(self):
-        data, errors = user_schema.load(request.get_json())
+        data = user_schema.load(request.get_json())
         entity = models.User(**data)
         current_app.db_session.add(entity)
         current_app.db_session.commit()
-        response = user_schema.dump(entity).data
+        response = user_schema.dump(entity)
         return response, 201
 
 
@@ -42,7 +42,7 @@ class User(Resource):
             models.User.id == id).one_or_none()
         if not entity:
             api.abort(404)
-        response = user_schema.dump(entity).data
+        response = user_schema.dump(entity)
         return response
 
     @api.doc()
@@ -53,10 +53,10 @@ class User(Resource):
             models.User.id == id).one_or_none()
         if not entity:
             api.abort(404)
-        data, errors = user_schema.load(request.get_json())
+        data = user_schema.load(request.get_json())
         entity.update(data)
         current_app.db_session.commit()
-        response = user_schema.dump(entity).data
+        response = user_schema.dump(entity)
         return response
 
     @api.doc(responses={204: 'User deleted'})
