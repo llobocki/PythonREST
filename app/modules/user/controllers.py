@@ -1,10 +1,9 @@
 import sqlalchemy as sa
-
 from app.modules.user import models
 from app.modules.user.namespace import api, response_user, user
 from app.modules.user.schemas import UserSchema
 from flask import current_app, request
-from flask_restplus import Resource
+from flask_restx import Resource
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
