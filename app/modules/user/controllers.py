@@ -1,12 +1,13 @@
-import sqlalchemy as sa
-from app.modules.user import models
+from app.modules.user.dao import UserDAO
 from app.modules.user.namespace import api, response_user, user
 from app.modules.user.schemas import UserSchema
-from flask import current_app, request
+from flask import request
 from flask_restx import Resource
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
+
+user_Dao = UserDAO()
 
 
 @api.route('/')
@@ -15,7 +16,7 @@ class UserList(Resource):
     @api.doc()
     @api.marshal_list_with(response_user)
     def get(self):
-        entities = current_app.db_session.query(models.User).all()
+        entities = user_Dao.all()
         response = users_schema.dump(entities)
         return response
 
@@ -24,9 +25,7 @@ class UserList(Resource):
     @api.marshal_with(response_user, code=201)
     def post(self):
         data = user_schema.load(request.get_json())
-        entity = models.User(**data)
-        current_app.db_session.add(entity)
-        current_app.db_session.commit()
+        entity = user_Dao.create(data)
         response = user_schema.dump(entity)
         return response, 201
 
@@ -37,10 +36,7 @@ class User(Resource):
     @api.doc()
     @api.marshal_with(response_user)
     def get(self, id):
-        entity = current_app.db_session.query(models.User).filter(
-            models.User.id == id).one_or_none()
-        if not entity:
-            api.abort(404)
+        entity = user_Dao.get(id)
         response = user_schema.dump(entity)
         return response
 
@@ -48,23 +44,12 @@ class User(Resource):
     @api.expect(user, validate=True)
     @api.marshal_with(response_user)
     def put(self, id):
-        entity = current_app.db_session.query(models.User).filter(
-            models.User.id == id).one_or_none()
-        if not entity:
-            api.abort(404)
         data = user_schema.load(request.get_json())
-        entity.update(data)
-        current_app.db_session.commit()
+        entity = user_Dao.update(id, data)
         response = user_schema.dump(entity)
         return response
 
     @api.doc(responses={204: 'User deleted'})
     def delete(self, id):
-        entity = current_app.db_session.query(models.User).filter(
-            models.User.id == id).first()
-        try:
-            current_app.db_session.delete(entity)
-        except sa.orm.exc.UnmappedInstanceError:
-            api.abort(404)
-        current_app.db_session.commit()
+        user_Dao.delete(id)
         return None, 204
