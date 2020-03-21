@@ -1,11 +1,7 @@
 from app.modules.user.dao import UserDAO
-from app.modules.user.namespace import api, response_user, user
-from app.modules.user.schemas import UserSchema
+from app.modules.user.namespace import api, user
 from flask import request
 from flask_restx import Resource
-
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
 
 user_Dao = UserDAO()
 
@@ -14,40 +10,30 @@ user_Dao = UserDAO()
 class UserList(Resource):
 
     @api.doc()
-    @api.marshal_list_with(response_user)
+    @api.marshal_list_with(user)
     def get(self):
-        entities = user_Dao.all()
-        response = users_schema.dump(entities)
-        return response
+        return user_Dao.all()
 
     @api.doc()
     @api.expect(user, validate=True)
-    @api.marshal_with(response_user, code=201)
+    @api.marshal_with(user, code=201)
     def post(self):
-        data = user_schema.load(request.get_json())
-        entity = user_Dao.create(data)
-        response = user_schema.dump(entity)
-        return response, 201
+        return user_Dao.create(api.payload), 201
 
 
 @api.route('/<int:id>')
 class User(Resource):
 
     @api.doc()
-    @api.marshal_with(response_user)
+    @api.marshal_with(user)
     def get(self, id):
-        entity = user_Dao.get(id)
-        response = user_schema.dump(entity)
-        return response
+        return user_Dao.get(id)
 
     @api.doc()
     @api.expect(user, validate=True)
-    @api.marshal_with(response_user)
+    @api.marshal_with(user)
     def put(self, id):
-        data = user_schema.load(request.get_json())
-        entity = user_Dao.update(id, data)
-        response = user_schema.dump(entity)
-        return response
+        return user_Dao.update(id, api.payload)
 
     @api.doc(responses={204: 'User deleted'})
     def delete(self, id):
